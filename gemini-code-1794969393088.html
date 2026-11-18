@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para mi niña</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Cormorant Garamond, Playfair Display & Quicksand -->
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: linear-gradient(135deg, #fff5f7 0%, #ffe3e8 45%, #ffd1dc 80%, #ffc2d1 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            touch-action: manipulation;
+        }
+        h1, h2, h3, .font-serif-romantic {
+            font-family: 'Playfair Display', serif;
+        }
+        .font-poetic {
+            font-family: 'Cormorant Garamond', serif;
+        }
+        #hearts-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .content-layer {
+            position: relative;
+            z-index: 10;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.78);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.75);
+        }
+        .bleach-card {
+            background: linear-gradient(145deg, rgba(255, 250, 252, 0.94), rgba(255, 238, 243, 0.9));
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(244, 114, 182, 0.25);
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #fff0f3;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #f9a8d4;
+            border-radius: 4px;
+        }
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-7px) rotate(1.5deg); }
+        }
+        .floating-badge {
+            animation: floatSlow 4.5s ease-in-out infinite;
+        }
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 4px 18px rgba(244, 114, 182, 0.35); }
+            50% { box-shadow: 0 6px 28px rgba(236, 72, 153, 0.65); }
+        }
+        .glow-btn {
+            animation: pulseGlow 3s infinite;
+        }
+        @keyframes pulseCard {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.06); box-shadow: 0 0 20px rgba(244, 114, 182, 0.5); }
+            100% { transform: scale(1); }
+        }
+        .lang-pulse {
+            animation: pulseCard 0.5s ease-out;
+        }
+        @keyframes wiggleCat {
+            0%, 100% { transform: rotate(-3deg) scale(1); }
+            50% { transform: rotate(3deg) scale(1.04); }
+        }
+        .grumpy-cat-anim {
+            animation: wiggleCat 2.2s ease-in-out infinite;
+        }
+        #btn-si {
+            transition: left 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), top 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.15s ease, background 0.3s ease;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+    </style>
+</head>
+<body class="text-rose-950 selection:bg-pink-200 selection:text-rose-900">
+
+    <!-- Reproductor secuencial en bucle desde el inicio -->
+    <audio id="bg-audio" preload="auto"></audio>
+
+    <!-- Control flotante discreto de música -->
+    <div id="audio-bar" class="fixed bottom-4 right-4 z-40 flex items-center gap-2 bg-white/90 backdrop-blur-md border border-pink-200 px-3.5 py-2 rounded-full shadow-lg text-xs font-semibold text-rose-800">
+        <button id="btn-audio-toggle" type="button" class="w-7 h-7 rounded-full bg-gradient-to-r from-rose-500 to-pink-500 text-white flex items-center justify-center shadow-sm hover:opacity-95 transition-opacity" title="Pausar o reanudar">
+            ⏸
+        </button>
+        <span id="audio-label" class="max-w-[140px] truncate">Pista 1</span>
+        <button id="btn-audio-next" type="button" class="px-2 py-1 rounded-full bg-pink-50 hover:bg-pink-100 text-rose-600 transition-colors" title="Siguiente canción">
+            ⏭
+        </button>
+    </div>
+
+    <canvas id="hearts-canvas"></canvas>
+
+    <!-- PANTALLA 1: BROMA INTERACTIVA DE ENTRADA -->
+    <section id="gatekeeper-screen" class="content-layer min-h-screen w-full flex flex-col items-center justify-center px-4 py-8 relative overflow-hidden">
+        <div class="glass-card w-full max-w-md p-6 sm:p-8 rounded-3xl shadow-2xl border border-pink-200/90 text-center relative z-20">
+            <div class="inline-block bg-pink-100/90 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest text-rose-500 mb-4 floating-badge">
+                🔒 Sorpresa Secreta 🔒
+            </div>
+
+            <h1 class="text-3xl sm:text-4xl font-bold text-rose-900 leading-tight mb-3">
+                ¿Quieres saber qué hay aquí? 🤭
+            </h1>
+
+            <p id="prank-subtitle" class="text-sm sm:text-base text-rose-800/80 font-medium mb-6 min-h-[2.75rem] flex items-center justify-center px-2">
+                Tengo algo muy especial guardado para mi niña bonita... ✨
+            </p>
+
+            <div id="gatekeeper-btn-area" class="flex items-center justify-center gap-4 min-h-[56px] relative">
+                <div id="btn-si-placeholder" class="hidden w-28 h-12"></div>
+
+                <button id="btn-si" type="button" class="px-7 py-3 bg-gradient-to-r from-rose-500 to-pink-500 text-white font-bold text-base sm:text-lg rounded-2xl shadow-lg hover:from-rose-600 hover:to-pink-600 active:scale-95 select-none touch-manipulation">
+                    Sí 💖
+                </button>
+
+                <button id="btn-no" type="button" class="px-7 py-3 bg-white/95 hover:bg-pink-50 text-rose-700 border border-pink-300 font-bold text-base sm:text-lg rounded-2xl shadow-sm active:scale-95 transition-all select-none touch-manipulation">
+                    No 🙄
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal del Gatito Enojado al tocar "No" -->
+    <div id="grumpy-cat-overlay" class="fixed inset-0 bg-rose-950/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div id="grumpy-cat-card" class="bg-white/95 backdrop-blur-xl w-full max-w-sm p-6 rounded-3xl shadow-2xl border-2 border-pink-200 text-center transform scale-95 transition-transform duration-300">
+            <h2 class="text-2xl sm:text-3xl font-bold text-rose-900 mb-2">
+                ¿Por qué no? Si quieres verlo 😾
+            </h2>
+            <p class="text-xs sm:text-sm text-rose-700/80 mb-4">
+                No te hagas la difícil, mi vida... ¡mira esta carita! 😤🐾
+            </p>
+
+            <div class="relative mx-auto w-48 h-48 sm:w-52 sm:h-52 rounded-2xl overflow-hidden bg-gradient-to-b from-pink-100 to-rose-100 border-2 border-pink-200 shadow-inner flex items-center justify-center mb-5">
+                <div id="default-cat-svg" class="w-full h-full flex flex-col items-center justify-center p-2 grumpy-cat-anim">
+                    <svg viewBox="0 0 200 200" class="w-40 h-40 drop-shadow-md">
+                        <polygon points="35,75 48,22 85,55" fill="#9ca3af" stroke="#4b5563" stroke-width="4" stroke-linejoin="round"/>
+                        <polygon points="44,68 51,33 76,56" fill="#fda4af"/>
+                        <polygon points="165,75 152,22 115,55" fill="#9ca3af" stroke="#4b5563" stroke-width="4" stroke-linejoin="round"/>
+                        <polygon points="156,68 149,33 124,56" fill="#fda4af"/>
+                        <ellipse cx="100" cy="112" rx="68" ry="58" fill="#d1d5db" stroke="#4b5563" stroke-width="4"/>
+                        <path d="M 55 72 Q 100 92 145 72 Q 130 56 100 56 Q 70 56 55 72 Z" fill="#6b7280"/>
+                        <line x1="52" y1="86" x2="88" y2="100" stroke="#1f2937" stroke-width="7" stroke-linecap="round"/>
+                        <line x1="148" y1="86" x2="112" y2="100" stroke="#1f2937" stroke-width="7" stroke-linecap="round"/>
+                        <circle cx="72" cy="108" r="12" fill="#fef08a" stroke="#1f2937" stroke-width="3"/>
+                        <circle cx="72" cy="108" r="5" fill="#111827"/>
+                        <circle cx="128" cy="108" r="12" fill="#fef08a" stroke="#1f2937" stroke-width="3"/>
+                        <circle cx="128" cy="108" r="5" fill="#111827"/>
+                        <ellipse cx="52" cy="126" rx="10" ry="6" fill="#fb7185" opacity="0.65"/>
+                        <ellipse cx="148" cy="126" rx="10" ry="6" fill="#fb7185" opacity="0.65"/>
+                        <polygon points="94,122 106,122 100,130" fill="#f43f5e"/>
+                        <path d="M 74 146 Q 100 128 126 146" fill="none" stroke="#1f2937" stroke-width="4.5" stroke-linecap="round"/>
+                        <line x1="22" y1="116" x2="48" y2="120" stroke="#4b5563" stroke-width="3" stroke-linecap="round"/>
+                        <line x1="20" y1="130" x2="48" y2="128" stroke="#4b5563" stroke-width="3" stroke-linecap="round"/>
+                        <line x1="178" y1="116" x2="152" y2="120" stroke="#4b5563" stroke-width="3" stroke-linecap="round"/>
+                        <line x1="180" y1="130" x2="152" y2="128" stroke="#4b5563" stroke-width="3" stroke-linecap="round"/>
+                        <path d="M 146 44 L 152 50 L 158 44 M 146 58 L 152 52 L 158 58" fill="none" stroke="#ef4444" stroke-width="3" stroke-linecap="round"/>
+                    </svg>
+                </div>
+            </div>
+
+            <button id="btn-cerrar-gatito" type="button" class="w-full py-3 px-5 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-bold rounded-2xl shadow-md transition-all active:scale-95">
+                Perdón, sí quiero verlo 🥺👉👈
+            </button>
+        </div>
+    </div>
+
+    <!-- PANTALLA 2: PÁGINA PRINCIPAL ROMÁNTICA DE ANIVERSARIO -->
+    <div id="main-surprise-page" class="hidden content-layer max-w-4xl mx-auto px-4 py-8 sm:py-12 flex flex-col items-center min-h-screen justify-between opacity-0 transition-opacity duration-700">
+        <header class="text-center w-full mb-10">
+            <div class="inline-block bg-white/85 backdrop-blur-md px-6 py-2 rounded-full shadow-sm mb-5 border border-pink-200 floating-badge">
+                <span class="text-rose-500 font-semibold text-xs sm:text-sm tracking-widest uppercase flex items-center gap-2">
+                    <span>✨</span> Para mi niña bonita, mi cielo y mi vida <span>✨</span>
+                </span>
+            </div>
+
+            <h1 class="text-4xl sm:text-6xl lg:text-7xl font-bold text-rose-900 tracking-tight mb-4 drop-shadow-sm">
+                Feliz Aniversario, <br>
+                <span id="nombre-pareja" class="text-transparent bg-clip-text bg-gradient-to-r from-rose-600 via-pink-500 to-rose-400 italic font-serif-romantic">Ariadny Daniela</span> 💖
+            </h1>
+
+            <p class="text-base sm:text-lg text-rose-800/85 max-w-2xl mx-auto font-medium leading-relaxed">
+                Cada día le doy gracias a Dios por haberme bendecido con mi niña: por tu piel <span class="text-rose-600 font-semibold">morena</span> que ilumina mis días, por cada uno de tus <span class="text-rose-600 font-semibold">rizos</span> que me vuelven loco y por enseñarme lo que somos <span class="text-rose-600 font-semibold">cuando nadie ve</span>.
+            </p>
+        </header>
+
+        <main class="w-full space-y-12 my-auto">
+            <section class="w-full">
+                <div class="text-center mb-6">
+                    <h2 class="text-2xl sm:text-3xl font-bold text-rose-900">Te Amo en Todos los Idiomas</h2>
+                    <p class="text-xs sm:text-sm text-rose-700/75 mt-1">Toca cada tarjeta, mi cielo... en todos los idiomas la respuesta sigue siendo tú ✨</p>
+                </div>
+
+                <div id="lang-toast" class="min-h-[3.25rem] mb-5 flex items-center justify-center">
+                    <div id="lang-toast-box" class="bg-white/90 border border-pink-200 px-5 py-2.5 rounded-2xl shadow-sm text-center text-sm sm:text-base text-rose-800 font-medium transition-all duration-300">
+                        💌 Elige un idioma, mi vida...
+                    </div>
+                </div>
+
+                <div id="languages-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4"></div>
+            </section>
+
+            <section class="w-full max-w-2xl mx-auto">
+                <div class="bleach-card rounded-3xl p-6 sm:p-10 shadow-xl relative overflow-hidden text-center transition-all duration-500">
+                    <span class="absolute top-4 left-5 text-pink-300/60 text-2xl select-none">「</span>
+                    <span class="absolute bottom-4 right-5 text-pink-300/60 text-2xl select-none">」</span>
+
+                    <div class="flex items-center justify-center gap-2 mb-4">
+                        <span class="h-px w-8 bg-rose-300"></span>
+                        <span class="text-xs uppercase tracking-[0.25em] text-rose-500 font-bold">Versos del Alma • Poema <span id="poem-number">I</span></span>
+                        <span class="h-px w-8 bg-rose-300"></span>
+                    </div>
+
+                    <div id="poem-display" class="min-h-[155px] flex flex-col justify-center items-center px-2 sm:px-6 transition-opacity duration-300">
+                        <p id="poem-text" class="font-poetic italic text-xl sm:text-2xl lg:text-[26px] text-rose-950 leading-relaxed whitespace-pre-line">
+                            "Si mi alma fuera una hoja afilada por el invierno,
+                            tu risa sería el único lugar donde aceptaría quebrarme.
+                            Doy gracias al cielo por tu piel morena y tus rizos al viento,
+                            porque incluso en el silencio más vasto,
+                            mi destino siempre pronuncia tu nombre."
+                        </p>
+                        <p id="poem-subtitle" class="text-xs text-rose-500/80 uppercase tracking-widest mt-4 font-semibold">
+                            — Capítulo Eterno: Ariadny Daniela
+                        </p>
+                    </div>
+
+                    <div class="mt-6 flex justify-center">
+                        <button id="btn-siguiente-poema" type="button" class="px-5 py-2 rounded-full bg-white/90 hover:bg-white text-rose-700 border border-pink-200 text-xs sm:text-sm font-semibold shadow-sm hover:shadow transition-all duration-300 flex items-center gap-2">
+                            <span>🌙</span> Leer otro verso del alma
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="w-full space-y-5">
+                <div class="text-center">
+                    <h2 class="text-2xl sm:text-3xl font-bold text-rose-900">Pequeños Detalles Para Tu Corazón</h2>
+                </div>
+
+                <div class="glass-card max-w-xl mx-auto p-5 sm:p-6 rounded-3xl shadow-md text-center border border-pink-200/80">
+                    <span class="text-xs uppercase tracking-widest text-rose-400 font-bold block mb-2">Razón #<span id="reason-index">1</span> por la que te amo</span>
+                    <p id="reason-text" class="text-base sm:text-lg text-rose-900 font-medium min-h-[3.5rem] flex items-center justify-center px-2">
+                        "Porque cada noche le doy gracias a Dios por haber puesto en mi camino a una niña morena tan dulce, auténtica y llena de luz."
+                    </p>
+                    <button id="btn-siguiente-razon" type="button" class="mt-4 px-5 py-2.5 bg-gradient-to-r from-rose-400 to-pink-400 hover:from-rose-500 hover:to-pink-500 text-white text-sm font-semibold rounded-full shadow-md transition-all duration-300 inline-flex items-center gap-2">
+                        <span>🌸</span> Otra razón por la que te amo
+                    </button>
+                </div>
+
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-3.5 sm:gap-4 pt-2">
+                    <button id="btn-abrir-carta" type="button" class="w-full sm:w-auto px-6 py-3.5 bg-gradient-to-r from-rose-500 to-pink-500 text-white font-semibold rounded-2xl shadow-lg hover:shadow-xl hover:from-rose-600 hover:to-pink-600 transition-all duration-300 flex items-center justify-center gap-2 glow-btn">
+                        <span>💌</span> Abre una carta para ti
+                    </button>
+
+                    <button id="btn-abrir-deseo" type="button" class="w-full sm:w-auto px-6 py-3.5 bg-white/95 text-rose-800 border border-pink-300 font-semibold rounded-2xl shadow-md hover:bg-white hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2">
+                        <span>✨</span> Un deseo para nuestro futuro
+                    </button>
+
+                    <button id="btn-llenar-amor" type="button" class="w-full sm:w-auto px-6 py-3.5 bg-gradient-to-r from-pink-300 via-rose-300 to-amber-200 text-rose-950 border border-white font-bold rounded-2xl shadow-md hover:shadow-lg hover:scale-[1.02] active:scale-95 transition-all duration-300 flex items-center justify-center gap-2">
+                        <span>💖</span> Toca para llenar de amor
+                    </button>
+                </div>
+            </section>
+        </main>
+
+        <footer class="mt-14 text-center text-xs sm:text-sm text-rose-800/75 font-medium space-y-2">
+            <p>Para <span class="font-bold text-rose-700">Ariadny Daniela</span>, mi niña bonita — Gracias a Dios por tu vida, hoy y siempre contigo 🌸</p>
+            <p class="text-[11px] text-rose-700/60">Hecho con cada latido de mi corazón en nuestro aniversario 🤍</p>
+            <div class="pt-2">
+                <button id="btn-reiniciar-broma" type="button" class="text-[11px] text-rose-500/80 hover:text-rose-700 underline underline-offset-2 transition-colors">
+                    Volver a jugar la broma del inicio 🤭
+                </button>
+            </div>
+        </footer>
+    </div>
+
+    <!-- MODALES DE CARTA Y DESEOS -->
+    <div id="modal-overlay" class="fixed inset-0 bg-rose-950/45 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div id="modal-carta" class="modal-content hidden bg-white/95 backdrop-blur-xl w-full max-w-xl p-6 sm:p-8 rounded-3xl shadow-2xl border border-pink-200 transform scale-95 transition-transform duration-300">
+            <div class="flex justify-between items-center mb-4 border-b border-pink-100 pb-3">
+                <h3 class="text-xl sm:text-2xl font-bold text-rose-900 flex items-center gap-2"><span>💌</span> Para mi niña, Ariadny Daniela</h3>
+                <button type="button" onclick="cerrarModal()" class="w-8 h-8 rounded-full bg-pink-50 text-rose-500 hover:bg-pink-100 hover:text-rose-800 flex items-center justify-center text-xl font-bold transition-colors">&times;</button>
+            </div>
+            <div class="space-y-4 max-h-[62vh] overflow-y-auto pr-2 text-rose-950/90 text-sm sm:text-base leading-relaxed bg-gradient-to-b from-pink-50/70 to-white p-5 sm:p-6 rounded-2xl border border-pink-100">
+                <p class="font-serif-romantic italic text-lg text-rose-800 font-semibold">Mi niña bonita, mi cielo,</p>
+                <p>
+                    Hoy quiero empezar dándole gracias a Dios desde lo más profundo de mi corazón por haberme regalado la dicha de tenerte en mi vida. Cuando te miro, entiendo que Él pensó en cada detalle al crearte: el brillo tan hermoso de tu <span class="font-semibold text-rose-600">piel morena</span>, la magia de tu <span class="font-semibold text-rose-600">cabello rizado</span> y esa forma tan tuya de llenar de paz todo lo que tocas.
+                </p>
+                <p>
+                    <span class="font-semibold text-rose-600">En un solo día</span> cambiaste mi suerte por completo, y me enamoré de todo lo que somos <span class="font-semibold text-rose-600">cuando nadie ve</span>: tus risas espontáneas, tus ojitos brillando y la ternura con la que me abrazas. Aunque pasen los años y cambien las estaciones, <span class="font-semibold text-rose-600">este amor no se va</span>; al contrario, se vuelve una bendición más grande cada mañana.
+                </p>
+                <div class="my-4 py-3 px-4 border-l-2 border-rose-400 bg-rose-50/60 rounded-r-xl font-poetic italic text-lg sm:text-xl text-rose-900">
+                    "Aunque el mundo cambie de forma y el tiempo borre las estaciones, mi hilo rojo siempre sabrá regresar a tus rizos y a tus manos; porque cuidar la luz de mi niña es la promesa más hermosa que Dios me confió."
+                </div>
+                <p class="text-right font-serif-romantic italic font-bold text-rose-700 text-lg pt-2">
+                    Feliz aniversario, mi vida.<br>
+                    Gracias a Dios por ti hoy y siempre 🤍🌸
+                </p>
+            </div>
+            <div class="mt-6 text-center">
+                <button type="button" onclick="cerrarModal(); llenarDeAmor();" class="px-6 py-2.5 bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-full font-semibold shadow-md hover:opacity-95 transition-opacity">
+                    Guardar en mi corazón 💖
+                </button>
+            </div>
+        </div>
+
+        <div id="modal-deseo" class="modal-content hidden bg-white/95 backdrop-blur-xl w-full max-w-lg p-6 sm:p-8 rounded-3xl shadow-2xl border border-pink-200 transform scale-95 transition-transform duration-300 text-center">
+            <div class="flex justify-between items-center mb-4 border-b border-pink-100 pb-3">
+                <h3 class="text-xl font-bold text-rose-900 flex items-center gap-2"><span>✨</span> Deseos Para Nuestro Futuro</h3>
+                <button type="button" onclick="cerrarModal()" class="w-8 h-8 rounded-full bg-pink-50 text-rose-500 hover:bg-pink-100 hover:text-rose-800 flex items-center justify-center text-xl font-bold transition-colors">&times;</button>
+            </div>
+            <div class="py-5 space-y-4">
+                <div class="text-5xl floating-badge">🌙🌸✨</div>
+                <span class="text-xs uppercase tracking-widest text-rose-400 font-bold block">Promesa #<span id="wish-number">1</span></span>
+                <p id="wish-text" class="font-poetic italic text-2xl sm:text-[26px] text-rose-950 leading-snug px-3 min-h-[5rem] flex items-center justify-center">
+                    "Seguir dándole gracias a Dios cada mañana al despertar junto a mi niña, acariciando tus rizos mientras vemos salir el sol."
+                </p>
+            </div>
+            <div class="mt-3 flex flex-col sm:flex-row justify-center gap-3">
+                <button id="btn-siguiente-deseo" type="button" class="px-5 py-2.5 bg-pink-100 hover:bg-pink-200 text-rose-800 rounded-full font-semibold text-sm transition-colors">
+                    ✨ Pedir otro deseo
+                </button>
+                <button type="button" onclick="cerrarModal(); llenarDeAmor();" class="px-6 py-2.5 bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-full font-semibold text-sm shadow-md hover:opacity-95 transition-opacity">
+                    ¡Hecho, mi niña bonita! 💖
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const audioPlaylist = [
+            { title: "Pasilyo - SunKissed Lola", file: "Pasilyo - SunKissed Lola (Piano Cover).mp3" },
+            { title: "Quererte Bonito", file: "Sebastián Yatra, ELENA ROSE - Quererte Bonito (Official Video).mp3" },
+            { title: "Blanco y Negro", file: "Joaquina - Blanco y Negro (Official Video).mp3" }
+        ];
+
+        const bgAudio = document.getElementById("bg-audio");
+        const btnAudioToggle = document.getElementById("btn-audio-toggle");
+        const btnAudioNext = document.getElementById("btn-audio-next");
+        const audioLabel = document.getElementById("audio-label");
+
+        let currentTrackIndex = 0;
+        let hasStartedFromZero = false;
+
+        function updateAudioUI(isPlaying) {
+            if (btnAudioToggle) {
+                btnAudioToggle.innerHTML = isPlaying ? "⏸" : "▶";
+            }
+            if (audioLabel && audioPlaylist[currentTrackIndex]) {
+                audioLabel.textContent = audioPlaylist[currentTrackIndex].title;
+            }
+        }
+
+        function loadTrack(index, resetToZero = true) {
+            if (!bgAudio || !audioPlaylist.length) return;
+            currentTrackIndex = ((index % audioPlaylist.length) + audioPlaylist.length) % audioPlaylist.length;
+            bgAudio.src = encodeURI(audioPlaylist[currentTrackIndex].file);
+            bgAudio.load();
+            if (resetToZero) {
+                bgAudio.currentTime = 0;
+            }
+            updateAudioUI(!bgAudio.paused);
+        }
+
+        function playSequenceFromStart() {
+            if (!bgAudio || !audioPlaylist.length) return;
+            if (!bgAudio.getAttribute("src")) {
+                loadTrack(0, true);
+            }
+            if (!hasStartedFromZero) {
+                bgAudio.currentTime = 0;
+                hasStartedFromZero = true;
+            }
+            bgAudio.play().then(() => {
+                updateAudioUI(true);
+            }).catch(() => {
+                updateAudioUI(false);
+            });
+        }
+
+        function playNextTrack() {
+            currentTrackIndex = (currentTrackIndex + 1) % audioPlaylist.length;
+            bgAudio.src = encodeURI(audioPlaylist[currentTrackIndex].file);
+            bgAudio.currentTime = 0;
+            bgAudio.play().then(() => {
+                updateAudioUI(true);
+            }).catch(() => {
+                updateAudioUI(false);
+            });
+        }
+
+        if (bgAudio) {
+            bgAudio.addEventListener("ended", playNextTrack);
+            bgAudio.addEventListener("play", () => updateAudioUI(true));
+            bgAudio.addEventListener("pause", () => updateAudioUI(false));
+        }
+
+        let intentosSi = 0;
+        const maxIntentosEsquiva = 5;
+        let lastPosX = null;
+        let lastPosY = null;
+
+        const mensajesEsquiva = [
+            "¡Ey! Por ahí no es, intenta de nuevo, mi cielo 🤭",
+            "Jajaja casi me atrapas, mi niña bonita ✨",
+            "Prueba el otro botón... o sigue intentando, mi vida 💖",
+            "¡Qué rápida eres, mi cielo! Atrápame si puedes 🙈💖",
+            "Bueno, ya casi te dejo ganar, mi niña... 🌸"
+        ];
+
+        function manejarClickSi(e) {
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            playSequenceFromStart();
+
+            const btnSi = document.getElementById("btn-si");
+            const placeholder = document.getElementById("btn-si-placeholder");
+            const subtitle = document.getElementById("prank-subtitle");
+
+            if (intentosSi < maxIntentosEsquiva) {
+                intentosSi++;
+                placeholder.classList.remove("hidden");
+
+                if (btnSi.parentElement !== document.body) {
+                    const initialRect = btnSi.getBoundingClientRect();
+                    document.body.appendChild(btnSi);
+                    btnSi.style.position = "fixed";
+                    btnSi.style.zIndex = "9999";
+                    btnSi.style.margin = "0";
+                    btnSi.style.left = `${initialRect.left}px`;
+                    btnSi.style.top = `${initialRect.top}px`;
+                    lastPosX = initialRect.left;
+                    lastPosY = initialRect.top;
+                    void btnSi.offsetWidth;
+                }
+
+                if (intentosSi === maxIntentosEsquiva) {
+                    btnSi.innerHTML = "¡Ya me atrapaste! Entra 💖";
+                    btnSi.classList.add("glow-btn", "ring-4", "ring-pink-200");
+                }
+
+                const btnRect = btnSi.getBoundingClientRect();
+                const btnWidth = Math.max(btnRect.width, 120);
+                const btnHeight = Math.max(btnRect.height, 48);
+
+                const vw = Math.min(window.innerWidth, document.documentElement.clientWidth);
+                const vh = Math.min(window.innerHeight, document.documentElement.clientHeight);
+
+                const marginX = 24;
+                const marginTop = 70;
+                const marginBottom = 90;
+
+                const maxX = Math.max(marginX, vw - btnWidth - marginX);
+                const maxY = Math.max(marginTop, vh - btnHeight - marginBottom);
+
+                let newX = marginX;
+                let newY = marginTop;
+                for (let attempt = 0; attempt < 25; attempt++) {
+                    const candidateX = Math.floor(Math.random() * (maxX - marginX + 1)) + marginX;
+                    const candidateY = Math.floor(Math.random() * (maxY - marginTop + 1)) + marginTop;
+                    const dist = (lastPosX !== null && lastPosY !== null)
+                        ? Math.hypot(candidateX - lastPosX, candidateY - lastPosY)
+                        : 999;
+                    newX = candidateX;
+                    newY = candidateY;
+                    if (dist >= 75) break;
+                }
+
+                newX = Math.min(Math.max(marginX, newX), maxX);
+                newY = Math.min(Math.max(marginTop, newY), maxY);
+
+                lastPosX = newX;
+                lastPosY = newY;
+
+                btnSi.style.left = `${newX}px`;
+                btnSi.style.top = `${newY}px`;
+
+                subtitle.innerText = mensajesEsquiva[intentosSi - 1];
+                spawnBurst(6);
+            } else {
+                revelarSorpresa();
+            }
+        }
+
+        function revelarSorpresa() {
+            const gatekeeper = document.getElementById("gatekeeper-screen");
+            const mainPage = document.getElementById("main-surprise-page");
+            const btnSi = document.getElementById("btn-si");
+
+            playSequenceFromStart();
+            spawnBurst(55);
+
+            btnSi.style.opacity = "0";
+            btnSi.style.pointerEvents = "none";
+
+            gatekeeper.style.transition = "opacity 0.5s ease";
+            gatekeeper.style.opacity = "0";
+
+            setTimeout(() => {
+                btnSi.classList.add("hidden");
+                gatekeeper.classList.add("hidden");
+                mainPage.classList.remove("hidden");
+                window.scrollTo({ top: 0, behavior: "instant" });
+                requestAnimationFrame(() => {
+                    mainPage.classList.remove("opacity-0");
+                    mainPage.classList.add("opacity-100");
+                });
+            }, 480);
+        }
+
+        function reiniciarBroma() {
+            intentosSi = 0;
+            lastPosX = null;
+            lastPosY = null;
+            const gatekeeper = document.getElementById("gatekeeper-screen");
+            const mainPage = document.getElementById("main-surprise-page");
+            const btnArea = document.getElementById("gatekeeper-btn-area");
+            const btnNo = document.getElementById("btn-no");
+            const btnSi = document.getElementById("btn-si");
+            const placeholder = document.getElementById("btn-si-placeholder");
+            const subtitle = document.getElementById("prank-subtitle");
+
+            if (btnSi.parentElement !== btnArea) {
+                btnArea.insertBefore(btnSi, btnNo);
+            }
+            btnSi.style.position = "static";
+            btnSi.style.zIndex = "";
+            btnSi.style.left = "";
+            btnSi.style.top = "";
+            btnSi.style.margin = "";
+            btnSi.style.opacity = "1";
+            btnSi.style.pointerEvents = "auto";
+            btnSi.innerHTML = "Sí 💖";
+            btnSi.classList.remove("hidden", "glow-btn", "ring-4", "ring-pink-200");
+            placeholder.classList.add("hidden");
+
+            subtitle.innerText = "Tengo algo muy especial guardado para mi niña bonita... ✨";
+
+            mainPage.classList.add("opacity-0", "hidden");
+            mainPage.classList.remove("opacity-100");
+            gatekeeper.classList.remove("hidden");
+            gatekeeper.style.opacity = "1";
+        }
+
+        function abrirModalGatito() {
+            playSequenceFromStart();
+            const overlay = document.getElementById("grumpy-cat-overlay");
+            const card = document.getElementById("grumpy-cat-card");
+            overlay.classList.remove("opacity-0", "pointer-events-none");
+            overlay.classList.add("opacity-100");
+            setTimeout(() => {
+                card.classList.remove("scale-95");
+                card.classList.add("scale-100");
+            }, 15);
+        }
+
+        function cerrarModalGatito() {
+            const overlay = document.getElementById("grumpy-cat-overlay");
+            const card = document.getElementById("grumpy-cat-card");
+            overlay.classList.remove("opacity-100");
+            overlay.classList.add("opacity-0", "pointer-events-none");
+            card.classList.remove("scale-100");
+            card.classList.add("scale-95");
+        }
+
+        const loveLanguages = [
+            { lang: "Español", phrase: "Te amo ❤️", note: "Le doy gracias a Dios por mi niña morena y por la suerte de tenerte." },
+            { lang: "Français", phrase: "Je t'aime 💖", note: "Tus rizos y tu sonrisa son la obra de arte más linda que Dios creó." },
+            { lang: "Italiano", phrase: "Ti amo 🌹", note: "Porque cuando nadie ve, eres todo lo que siempre le pedí al cielo." },
+            { lang: "Português", phrase: "Eu te amo 💫", note: "Tu piel morena brilla más bonito que cualquier atardecer, mi vida." },
+            { lang: "日本語 (Japonés)", phrase: "愛してる (Aishiteru) 🌸", note: "Incluso bajo mil lunas, mi alma reconocería tus rizos al instante." },
+            { lang: "한국어 (Coreano)", phrase: "사랑해 (Saranghae) 💌", note: "En un solo día cambiaste mi suerte para siempre, mi niña bonita." },
+            { lang: "English", phrase: "I love you ✨", note: "I thank God every day for blessing my life with a girl as sweet as you." },
+            { lang: "Deutsch", phrase: "Ich liebe dich 🌷", note: "Este amor no se va; echa raíces más profundas con cada latido." },
+            { lang: "العربية (Árabe)", phrase: "أحبك (Uhibbuki) 🌙", note: "Eres el refugio sereno donde descansan todas mis tormentas, mi cielo." },
+            { lang: "Ελληνικά (Griego)", phrase: "Σ'αγαπώ (S'agapó) 🤍", note: "Me pierdo feliz entre cada onda de tu cabello rizado, mi amor." },
+            { lang: "Русский (Ruso)", phrase: "Я тебя люблю ❄️", note: "Un hilo rojo invisible une mis manos a las tuyas en cada vida." },
+            { lang: "Nahuatl", phrase: "Nimitztlazotla 🌺", note: "Mi vida, contigo cada segundo florece con la bendición de Dios." }
+        ];
+
+        const bleachPoems = [
+            {
+                num: "I",
+                text: `"Si mi alma fuera una hoja afilada por el invierno,\ntu risa sería el único lugar donde aceptaría quebrarme.\nDoy gracias al cielo por tu piel morena y tus rizos al viento,\nporque incluso en el silencio más vasto,\nmi destino siempre pronuncia tu nombre."`,
+                sub: "— Capítulo Eterno: Ariadny Daniela"
+            },
+            {
+                num: "II",
+                text: `"Le di gracias a Dios el instante en que te vi,\ncuando entendí que en un solo día cambiaste mi historia;\nentre el brillo de tu piel morena y la magia de tus rizos,\ndescubrí lo hermoso de lo que somos cuando nadie ve."`,
+                sub: "— Bendición del Cielo"
+            },
+            {
+                num: "III",
+                text: `"No necesito un mapa para encontrarte en otra vida.\nBastaría escuchar el eco suave de tus pasos\ny seguir la estela dulce de tu cabello rizado\npara volver a coincidir contigo, mi niña bonita."`,
+                sub: "— Hilo Rojo del Destino"
+            },
+            {
+                num: "IV",
+                text: `"Contigo aprendí a amarte sin mirar el reloj,\nsabiendo que incluso tras mil besos en guerra,\neste amor no se va ni se rinde ante la distancia;\nporque eres el regalo más puro que Dios puso en mis manos."`,
+                sub: "— Latido Inquebrantable"
+            },
+            {
+                num: "V",
+                text: `"Si la tormenta alguna vez intenta nublar tus ojos,\nseré el escudo silencioso que detenga la lluvia.\nPorque donde tú camines, Ariadny, allí estará mi sombra\nguardando cada latido de tu corazón."`,
+                sub: "— Juramento Silencioso"
+            }
+        ];
+
+        let currentPoemIdx = 0;
+        function siguientePoema() {
+            const poemDisplay = document.getElementById("poem-display");
+            poemDisplay.style.opacity = "0";
+            setTimeout(() => {
+                currentPoemIdx = (currentPoemIdx + 1) % bleachPoems.length;
+                const p = bleachPoems[currentPoemIdx];
+                document.getElementById("poem-number").innerText = p.num;
+                document.getElementById("poem-text").innerText = p.text;
+                document.getElementById("poem-subtitle").innerText = p.sub;
+                poemDisplay.style.opacity = "1";
+                spawnBurst(10);
+            }, 220);
+        }
+
+        const reasonsList = [
+            `"Porque cada noche le doy gracias a Dios por haber puesto en mi camino a una niña morena tan dulce, auténtica y llena de luz."`,
+            `"Porque me fascina enredar mis dedos en tu cabello rizado y perderme en el brillo de tu mirada, mi cielo."`,
+            `"Porque contigo aprendí a amarte sin miedos, como quien encuentra hogar después de una larga tormenta."`,
+            `"Porque cuando nadie ve, tu sonrisa sigue siendo lo más real y hermoso de todo mi mundo, mi vida."`,
+            `"Porque Dios se lució al crear cada detalle de ti: tu ternura, tu piel morena y esa forma tan única de amar."`,
+            `"Porque este amor no se va; al contrario, cada día echa raíces más profundas en mi pecho, mi niña bonita."`,
+            `"Porque eres Ariadny Daniela, la bendición más grande de mi vida y la historia que nunca quiero dejar de escribir."`
+        ];
+
+        let currentReasonIdx = 0;
+        function siguienteRazon() {
+            currentReasonIdx = (currentReasonIdx + 1) % reasonsList.length;
+            document.getElementById("reason-index").innerText = currentReasonIdx + 1;
+            document.getElementById("reason-text").innerText = reasonsList[currentReasonIdx];
+            spawnBurst(8);
+        }
+
+        const wishesList = [
+            `"Seguir dándole gracias a Dios cada mañana al despertar junto a mi niña, acariciando tus rizos mientras vemos salir el sol."`,
+            `"Que pase lo que pase afuera, nuestro amor siga siendo ese refugio sereno que no se va y siempre nos salva."`,
+            `"Recorrer de tu mano cada rincón que soñamos conocer, sabiendo que mi verdadero destino siempre serás tú, mi cielo."`,
+            `"Seguir descubriendo la magia de amarnos cuando nadie ve, celebrando cada uno de tus sueños como si fuera mío, mi vida."`,
+            `"Llegar a viejitos mirándonos con la misma ternura de hoy, agradeciendo a Dios por haber unido nuestras vidas."`
+        ];
+
+        let currentWishIdx = 0;
+        function siguienteDeseo() {
+            currentWishIdx = (currentWishIdx + 1) % wishesList.length;
+            document.getElementById("wish-number").innerText = currentWishIdx + 1;
+            document.getElementById("wish-text").innerText = wishesList[currentWishIdx];
+            spawnBurst(12);
+        }
+
+        function abrirModal(tipo) {
+            const overlay = document.getElementById("modal-overlay");
+            const modales = document.querySelectorAll(".modal-content");
+            modales.forEach(m => m.classList.add("hidden"));
+
+            const targetModal = document.getElementById(`modal-${tipo}`);
+            if (targetModal) {
+                targetModal.classList.remove("hidden");
+                overlay.classList.remove("opacity-0", "pointer-events-none");
+                overlay.classList.add("opacity-100");
+                setTimeout(() => {
+                    targetModal.classList.remove("scale-95");
+                    targetModal.classList.add("scale-100");
+                }, 15);
+            }
+        }
+
+        function cerrarModal() {
+            const overlay = document.getElementById("modal-overlay");
+            const modales = document.querySelectorAll(".modal-content");
+            overlay.classList.remove("opacity-100");
+            overlay.classList.add("opacity-0", "pointer-events-none");
+            modales.forEach(m => {
+                m.classList.remove("scale-100");
+                m.classList.add("scale-95");
+            });
+        }
+
+        const canvas = document.getElementById("hearts-canvas");
+        const ctx = canvas.getContext("2d");
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener("resize", resizeCanvas);
+        resizeCanvas();
+
+        const particles = [];
+        const colors = ["#ff85a1", "#fbb1bd", "#f472b6", "#ffccd5", "#fb7185"];
+
+        function createParticle(isBurst = false) {
+            return {
+                x: Math.random() * canvas.width,
+                y: isBurst ? canvas.height + 10 : Math.random() * canvas.height,
+                size: isBurst ? Math.random() * 14 + 10 : Math.random() * 11 + 7,
+                speedY: isBurst ? Math.random() * 3.2 + 1.8 : Math.random() * 0.8 + 0.35,
+                speedX: (Math.random() - 0.5) * (isBurst ? 2.5 : 0.6),
+                opacity: isBurst ? 0.9 : Math.random() * 0.5 + 0.25,
+                rotation: Math.random() * 360,
+                rotationSpeed: (Math.random() - 0.5) * 1.4,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                type: Math.random() > 0.35 ? "heart" : "petal",
+                isBurst: isBurst
+            };
+        }
+
+        for (let i = 0; i < 28; i++) {
+            particles.push(createParticle(false));
+        }
+
+        function spawnBurst(count) {
+            for (let i = 0; i < count; i++) {
+                particles.push(createParticle(true));
+            }
+        }
+
+        function llenarDeAmor() {
+            spawnBurst(45);
+            const langToastBox = document.getElementById("lang-toast-box");
+            if (langToastBox) {
+                langToastBox.innerHTML = `<span class="text-rose-600 font-bold">💖 ¡Gracias a Dios por ti, mi niña bonita! Te amo infinito 💖</span>`;
+            }
+        }
+
+        function drawHeart(x, y, size, opacity, rotation, color) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate((rotation * Math.PI) / 180);
+            ctx.globalAlpha = opacity;
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            let d = size;
+            ctx.moveTo(0, d / 4);
+            ctx.bezierCurveTo(0, 0, -d / 2, 0, -d / 2, d / 4);
+            ctx.bezierCurveTo(-d / 2, d / 2, 0, d * 0.75, 0, d);
+            ctx.bezierCurveTo(0, d * 0.75, d / 2, d / 2, d / 2, d / 4);
+            ctx.bezierCurveTo(d / 2, 0, 0, 0, 0, d / 4);
+            ctx.fill();
+            ctx.restore();
+        }
+
+        function drawPetal(x, y, size, opacity, rotation, color) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate((rotation * Math.PI) / 180);
+            ctx.globalAlpha = opacity;
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.quadraticCurveTo(size * 0.6, -size * 0.5, size, 0);
+            ctx.quadraticCurveTo(size * 0.6, size * 0.5, 0, 0);
+            ctx.fill();
+            ctx.restore();
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                p.y -= p.speedY;
+                p.x += p.speedX + Math.sin(p.y * 0.015) * 0.3;
+                p.rotation += p.rotationSpeed;
+
+                if (p.y < -25) {
+                    if (p.isBurst) {
+                        particles.splice(i, 1);
+                        continue;
+                    } else {
+                        p.y = canvas.height + 20;
+                        p.x = Math.random() * canvas.width;
+                    }
+                }
+
+                if (p.type === "heart") {
+                    drawHeart(p.x, p.y, p.size, p.opacity, p.rotation, p.color);
+                } else {
+                    drawPetal(p.x, p.y, p.size, p.opacity, p.rotation, p.color);
+                }
+            }
+
+            requestAnimationFrame(animateParticles);
+        }
+
+        window.addEventListener("DOMContentLoaded", () => {
+            loadTrack(0, true);
+
+            const unlockOnce = () => {
+                playSequenceFromStart();
+                document.removeEventListener("pointerdown", unlockOnce);
+                document.removeEventListener("click", unlockOnce);
+            };
+            document.addEventListener("pointerdown", unlockOnce, { once: true });
+            document.addEventListener("click", unlockOnce, { once: true });
+
+            if (btnAudioToggle) {
+                btnAudioToggle.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    if (bgAudio.paused) {
+                        playSequenceFromStart();
+                    } else {
+                        bgAudio.pause();
+                    }
+                });
+            }
+
+            if (btnAudioNext) {
+                btnAudioNext.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    hasStartedFromZero = true;
+                    playNextTrack();
+                });
+            }
+
+            const btnSi = document.getElementById("btn-si");
+            const btnNo = document.getElementById("btn-no");
+            const btnCerrarGatito = document.getElementById("btn-cerrar-gatito");
+            const modalOverlay = document.getElementById("modal-overlay");
+
+            if (btnSi) {
+                btnSi.addEventListener("click", manejarClickSi);
+            }
+
+            if (btnNo) {
+                btnNo.addEventListener("click", abrirModalGatito);
+            }
+
+            if (btnCerrarGatito) {
+                btnCerrarGatito.addEventListener("click", cerrarModalGatito);
+            }
+
+            if (modalOverlay) {
+                modalOverlay.addEventListener("click", function(e) {
+                    if (e.target === this) cerrarModal();
+                });
+            }
+
+            document.getElementById("btn-siguiente-poema").addEventListener("click", siguientePoema);
+            document.getElementById("btn-siguiente-razon").addEventListener("click", siguienteRazon);
+            document.getElementById("btn-abrir-carta").addEventListener("click", () => abrirModal('carta'));
+            document.getElementById("btn-abrir-deseo").addEventListener("click", () => abrirModal('deseo'));
+            document.getElementById("btn-llenar-amor").addEventListener("click", llenarDeAmor);
+            document.getElementById("btn-reiniciar-broma").addEventListener("click", reiniciarBroma);
+            document.getElementById("btn-siguiente-deseo").addEventListener("click", siguienteDeseo);
+
+            const languagesGrid = document.getElementById("languages-grid");
+            const langToastBox = document.getElementById("lang-toast-box");
+
+            loveLanguages.forEach((item) => {
+                const card = document.createElement("button");
+                card.type = "button";
+                card.className = "glass-card p-3.5 sm:p-4 rounded-2xl text-center shadow-sm hover:shadow-md hover:scale-105 hover:bg-white transition-all duration-300 border-pink-100 group cursor-pointer focus:outline-none focus:ring-2 focus:ring-rose-300";
+                card.innerHTML = `
+                    <span class="text-[11px] uppercase tracking-wider text-rose-400 font-bold block mb-1">${item.lang}</span>
+                    <p class="text-base sm:text-lg font-bold text-rose-900 group-hover:text-rose-600 transition-colors">${item.phrase}</p>
+                `;
+                card.addEventListener("click", () => {
+                    card.classList.remove("lang-pulse");
+                    void card.offsetWidth;
+                    card.classList.add("lang-pulse");
+
+                    langToastBox.style.opacity = "0.5";
+                    setTimeout(() => {
+                        langToastBox.innerHTML = `<span class="text-rose-500 font-bold">${item.phrase}</span> — ${item.note}`;
+                        langToastBox.style.opacity = "1";
+                    }, 120);
+
+                    spawnBurst(6);
+                });
+                languagesGrid.appendChild(card);
+            });
+
+            animateParticles();
+        });
+    </script>
+</body>
+</html>
