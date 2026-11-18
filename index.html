@@ -93,7 +93,7 @@
 </head>
 <body class="text-rose-950 selection:bg-pink-200 selection:text-rose-900">
 
-    <!-- Reproductor secuencial en bucle desde el inicio -->
+    <!-- Reproductor secuencial en bucle -->
     <audio id="bg-audio" preload="auto"></audio>
 
     <!-- Control flotante discreto de música -->
@@ -358,6 +358,7 @@
 
         let currentTrackIndex = 0;
         let hasStartedFromZero = false;
+        let isAudioUnlocked = false;
 
         function updateAudioUI(isPlaying) {
             if (btnAudioToggle) {
@@ -388,11 +389,17 @@
                 bgAudio.currentTime = 0;
                 hasStartedFromZero = true;
             }
-            bgAudio.play().then(() => {
-                updateAudioUI(true);
-            }).catch(() => {
-                updateAudioUI(false);
-            });
+            
+            const playPromise = bgAudio.play();
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    isAudioUnlocked = true;
+                    updateAudioUI(true);
+                }).catch((error) => {
+                    console.log("Reproducción bloqueada o pausada por navegador:", error);
+                    updateAudioUI(false);
+                });
+            }
         }
 
         function playNextTrack() {
@@ -676,6 +683,7 @@
         }
 
         function abrirModal(tipo) {
+            playSequenceFromStart();
             const overlay = document.getElementById("modal-overlay");
             const modales = document.querySelectorAll(".modal-content");
             modales.forEach(m => m.classList.add("hidden"));
@@ -743,6 +751,7 @@
         }
 
         function llenarDeAmor() {
+            playSequenceFromStart();
             spawnBurst(45);
             const langToastBox = document.getElementById("lang-toast-box");
             if (langToastBox) {
@@ -813,13 +822,14 @@
         window.addEventListener("DOMContentLoaded", () => {
             loadTrack(0, true);
 
-            const unlockOnce = () => {
-                playSequenceFromStart();
-                document.removeEventListener("pointerdown", unlockOnce);
-                document.removeEventListener("click", unlockOnce);
+            // Desbloqueo universal al primer toque/clic en cualquier parte de la pantalla en celulares
+            const unlockAudioOnFirstTouch = () => {
+                if (!isAudioUnlocked) {
+                    playSequenceFromStart();
+                }
             };
-            document.addEventListener("pointerdown", unlockOnce, { once: true });
-            document.addEventListener("click", unlockOnce, { once: true });
+            document.addEventListener("pointerdown", unlockAudioOnFirstTouch, { capture: true });
+            document.addEventListener("click", unlockAudioOnFirstTouch, { capture: true });
 
             if (btnAudioToggle) {
                 btnAudioToggle.addEventListener("click", (e) => {
@@ -863,13 +873,13 @@
                 });
             }
 
-            document.getElementById("btn-siguiente-poema").addEventListener("click", siguientePoema);
-            document.getElementById("btn-siguiente-razon").addEventListener("click", siguienteRazon);
+            document.getElementById("btn-siguiente-poema").addEventListener("click", () => { playSequenceFromStart(); siguientePoema(); });
+            document.getElementById("btn-siguiente-razon").addEventListener("click", () => { playSequenceFromStart(); siguienteRazon(); });
             document.getElementById("btn-abrir-carta").addEventListener("click", () => abrirModal('carta'));
             document.getElementById("btn-abrir-deseo").addEventListener("click", () => abrirModal('deseo'));
             document.getElementById("btn-llenar-amor").addEventListener("click", llenarDeAmor);
             document.getElementById("btn-reiniciar-broma").addEventListener("click", reiniciarBroma);
-            document.getElementById("btn-siguiente-deseo").addEventListener("click", siguienteDeseo);
+            document.getElementById("btn-siguiente-deseo").addEventListener("click", () => { playSequenceFromStart(); siguienteDeseo(); });
 
             const languagesGrid = document.getElementById("languages-grid");
             const langToastBox = document.getElementById("lang-toast-box");
@@ -883,6 +893,7 @@
                     <p class="text-base sm:text-lg font-bold text-rose-900 group-hover:text-rose-600 transition-colors">${item.phrase}</p>
                 `;
                 card.addEventListener("click", () => {
+                    playSequenceFromStart();
                     card.classList.remove("lang-pulse");
                     void card.offsetWidth;
                     card.classList.add("lang-pulse");
